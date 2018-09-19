@@ -9,8 +9,11 @@ We used [Deep Compression](https://arxiv.org/abs/1510.00149), [Weightless Encodi
 
 The Compression-Error rate exchange is shown below. Lower left is better.
 
+### LeNet-5 on MNIST
+
 ![LENET5 on MNIST](figures/mnist_comp.png)
 
-![VGG16 on CIFAR10](figures/cifar_comp.png)
+### VGG-16 on CIFAR-10
 
+![VGG16 on CIFAR10](figures/cifar_comp.png)
 
