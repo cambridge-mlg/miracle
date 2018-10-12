@@ -69,7 +69,8 @@ class Compressible(object):
         mean_validation_acc += validation_acc
         return mean_validation_acc / 20.
 
-    def compress(self, retrain_iter):
+    def compress(self, retrain_iter, kl_penalty_step=1.0005):
+        self.sess.run(self.kl_penalty_step.assign(kl_penalty_step))
         n_blocks = self.fixed_weights.get_shape().as_list()[0]
         self.sess.run(self.enable_kl_loss.assign(1.))
         for i in range(n_blocks):
@@ -154,10 +155,11 @@ class Compressible(object):
 
         self.enable_kl_loss = tf.Variable(1., dtype=DTYPE, trainable=False)
         self.kl_loss = tf.reduce_sum(block_kl * self.mask * kl_penalties) * self.enable_kl_loss
+        self.kl_penalty_step = tf.Variable(kl_penalty_step, trainable=False)
         self.kl_penalty_update = [kl_penalties.assign(tf.where(tf.logical_and(tf.cast(self.mask, tf.bool),
                                                                               tf.greater(block_kl, kl_target)),
-                                                               kl_penalties * kl_penalty_step,
-                                                               kl_penalties / kl_penalty_step))]
+                                                               kl_penalties * self.kl_penalty_step,
+                                                               kl_penalties / self.kl_penalty_step))]
 
         mask_expanded = tf.expand_dims(self.mask, 1)
         combined_weights = tf.reshape(mask_expanded * variational_weights
@@ -208,7 +210,7 @@ class Compressible(object):
             nll_p = tf.reduce_sum(tf.square(sample_block), axis=1)
             #prob = tf.Print(tf.exp(-nll), [nll_q, nll_p], summarize=100)
             #norm_prob = tf.Print(prob / tf.reduce_sum(prob), [prob], summarize=100)
-            dist = tf.distributions.Categorical(logits=nll_p - nll_q, validate_args=True)
+            dist = tf.distributions.Categorical(probs=tf.nn.softmax(nll_p - nll_q)) # , validate_args=True) #Risky
             index = dist.sample([])
 
             # This line makes the algorithm objectively better. But we cannot prove it theoretically.

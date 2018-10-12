@@ -1,5 +1,5 @@
-# Variational Shannon Coding
-This repository contains the code for our recent paper `Variational Shannon Coding' (arxiv link coming soon). This is the implementation of VSC for LeNet-5 on MNIST and VGG-16 on CIFAR-10. It is based on Tensorflow (1.3). 
+# MIRACLE
+This repository contains the code for our recent paper `Minimal Random Code Learning: Getting Bits Back from Compressed Model Parameters' (https://arxiv.org/abs/1810.00440). This is the implementation of MIRACLE for LeNet-5 on MNIST and VGG-16 on CIFAR-10. It is based on Tensorflow (1.3). 
 
 An example model can be trained by running
 
